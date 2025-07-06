@@ -1,0 +1,8 @@
+{
+  "name": "daily-protein-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite",
+  "id": "ed187615"
+}
