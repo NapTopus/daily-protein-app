@@ -9,5 +9,4 @@
   lang="ts"
   d
 >
-import { IonApp, IonRouterOutlet } from '@ionic/vue';
 </script>

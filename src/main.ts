@@ -6,6 +6,7 @@ import { IonicVue } from '@ionic/vue';
 
 /** Uno CSS */
 import 'virtual:uno.css'
+import './index.css';
 
 
 /* Core CSS required for Ionic components to work properly */
