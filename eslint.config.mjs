@@ -2,7 +2,7 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu(
   {
-    // unocss: true,
+    unocss: true,
     rules: {
       'no-console': 'warn',
       'unused-imports/no-unused-imports': 'warn',
@@ -41,6 +41,7 @@ export default antfu(
         order: [['script', 'template'], 'style'],
       }],
       'vue/multi-word-component-names': 'error',
+      'vue/no-deprecated-slot-attribute': 'off',
     },
   },
   {
