@@ -10,9 +10,9 @@
         />
         <div
           ref="mainSection"
-          class="border border-[1px] border-solid rounded-2xl px-10 py-8 bg-[rgba(0,0,0,0.1)] backdrop-blur-[10px] border-[#3b3b3b] shadow-[0_0_20px_rgba(36,154,174,0.8)] "
+          class="border border-[1px] border-solid rounded-2xl px-10 py-8 bg-[rgba(0,0,0,0.1)] backdrop-blur-[10px] border-[#3b3b3b] shadow-[0_0_20px_rgba(36,154,174,0.8)]"
         >
-          <h2 class="text-white z-100 text-[20px] text-left font-500 pb-[5px] ">
+          <h2 class="text-white z-100 text-[20px] text-left font-500 pb-[5px]">
             Today's Protein
           </h2>
           <!-- <p class="text-[14px] text-right mt-[3px] mb-0">
