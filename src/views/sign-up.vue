@@ -16,86 +16,113 @@
           </ion-card-header>
 
           <ion-card-content>
-            <ion-item>
-              <ion-label position="stacked">
-                Name
-              </ion-label>
-              <ion-input
-                v-model="signUpForm.name"
-                type="text"
-                placeholder="Enter your name"
-                :disabled="isLoading"
-              />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">
-                Email
-              </ion-label>
-              <ion-input
-                v-model="signUpForm.email"
-                type="email"
-                placeholder="Enter your email"
-                :disabled="isLoading"
-              />
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">
-                Password
-              </ion-label>
-              <ion-input
-                v-model="signUpForm.password"
-                type="password"
-                placeholder="Enter your password"
-                :disabled="isLoading"
-              >
-                <ion-input-password-toggle slot="end" />
-              </ion-input>
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="stacked">
-                Confirm Password
-              </ion-label>
-              <ion-input
-                v-model="signUpForm.password_confirmation"
-                type="password"
-                placeholder="Confirm your password"
-                :disabled="isLoading"
-              >
-                <ion-input-password-toggle slot="end" />
-              </ion-input>
-            </ion-item>
-
-            <div class="ion-padding">
-              <ion-button
-                expand="block"
-                type="submit"
-                :disabled="isLoading"
-                @click="handleSignUp"
-              >
-                <ion-spinner
-                  v-if="isLoading"
-                  name="crescent"
+            <!-- ✅ VeeValidate Form -->
+            <form @submit="onSubmit">
+              <!-- Name -->
+              <ion-item>
+                <ion-label position="stacked">
+                  Name
+                </ion-label>
+                <ion-input
+                  v-model="name"
+                  type="text"
+                  placeholder="Enter your name"
+                  :disabled="isLoading"
                 />
-                <p v-else>
-                  Sign Up
-                </p>
-              </ion-button>
-            </div>
+              </ion-item>
+              <p
+                v-if="errors.name"
+                class="text-red-500 text-sm mt-1"
+              >
+                {{ errors.name }}
+              </p>
 
-            <!-- Error Display -->
-            <ion-item
-              v-if="errorMessage"
-              color="danger"
-            >
-              <ion-icon
-                slot="start"
-                name="warning"
-              />
-              <ion-label>{{ errorMessage }}</ion-label>
-            </ion-item>
+              <ion-item>
+                <ion-label position="stacked">
+                  Email
+                </ion-label>
+                <ion-input
+                  v-model="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  :disabled="isLoading"
+                />
+              </ion-item>
+              <p
+                v-if="errors.password"
+                class="text-red-500 text-sm mt-1"
+              >
+                {{ errors.email }}
+              </p>
+
+              <ion-item>
+                <ion-label position="stacked">
+                  Password
+                </ion-label>
+                <ion-input
+                  v-model="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  :disabled="isLoading"
+                >
+                  <ion-input-password-toggle slot="end" />
+                </ion-input>
+              </ion-item>
+              <p
+                v-if="errors.password"
+                class="text-red-500 text-sm mt-1"
+              >
+                {{ errors.password }}
+              </p>
+
+              <ion-item>
+                <ion-label position="stacked">
+                  Confirm Password
+                </ion-label>
+                <ion-input
+                  v-model="passwordConfirmation"
+                  type="password"
+                  placeholder="Confirm your password"
+                  :disabled="isLoading"
+                >
+                  <ion-input-password-toggle slot="end" />
+                </ion-input>
+              </ion-item>
+              <p
+                v-if="errors.passwordConfirmation"
+                class="text-red-500 text-sm mt-1"
+              >
+                {{ errors.passwordConfirmation }}
+              </p>
+
+              <div class="ion-padding">
+                <ion-button
+                  expand="block"
+                  type="submit"
+                  :disabled="isLoading"
+                >
+                  <ion-spinner
+                    v-if="isLoading"
+                    name="crescent"
+                  />
+                  <p v-else>
+                    Sign Up
+                  </p>
+                </ion-button>
+              </div>
+
+              <!-- Error Display -->
+              <ion-item
+                v-if="signUpErrorMessage"
+                color="danger"
+              >
+                <ion-icon
+                  slot="start"
+                  name="warning"
+                />
+                <ion-label>{{ signUpErrorMessage }}</ion-label>
+              </ion-item>
+            </form>
           </ion-card-content>
         </ion-card>
 
@@ -114,49 +141,52 @@
   setup
   lang="ts"
 >
-import { useAsyncState } from '@vueuse/core'
+import type { SignUpDto } from '@/schemas'
+import { toTypedSchema } from '@vee-validate/zod'
 import to from 'await-to-js'
+import { useField, useForm } from 'vee-validate'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { signUp } from '@/api/auth'
 import { RouteName } from '@/router/index'
+import { signUpDtoSchema } from '@/schemas'
 
 const router = useRouter()
+const isLoading = ref(false)
 
-const signUpForm = ref({
-  name: '',
-  email: '',
-  password: '',
-  password_confirmation: '',
+const signUpSchema = toTypedSchema(signUpDtoSchema)
+
+const { handleSubmit, errors } = useForm({
+  validationSchema: signUpSchema,
 })
 
-const errorMessage = ref('')
+const { value: name } = useField('name')
+const { value: email } = useField('email')
+const { value: password } = useField('password')
+// TODO: 換成小駝峯命名
+const { value: passwordConfirmation } = useField('passwordConfirmation')
 
-const { execute: handleSignUp, isLoading } = useAsyncState(
-  async () => {
-    errorMessage.value = ''
+const signUpErrorMessage = ref('')
 
-    const [err, res] = await to(signUp(
-      signUpForm.value,
-    ))
+const onSubmit = handleSubmit(async (values: SignUpDto) => {
+  signUpErrorMessage.value = ''
+  isLoading.value = true
 
-    if (err) {
-      errorMessage.value = (err as any)?.response?.data?.message || 'Sign up failed'
-      throw err
-    }
+  const [err] = await to(signUp(values))
 
-    // TODO: call login API
+  if (err) {
+    signUpErrorMessage.value = (err as any)?.response?.data?.message || 'Sign up failed'
+    isLoading.value = false
+    return
+  }
 
-    // const token = res?.data?.token
-    // if (token)
-    //   localStorage.setItem('token', token)
-
-    router.replace({ name: RouteName.INDEX })
-    return res.data
-  },
-  null,
-  { immediate: false },
-)
+  router.replace({ name: RouteName.LOGIN })
+})
 </script>
 
-<style scoped></style>
+<style scoped>
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+</style>

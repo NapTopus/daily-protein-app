@@ -18,7 +18,7 @@
           <!-- <p class="text-[14px] text-right mt-[3px] mb-0">
             {{ todaysDate }}
           </p> -->
-          <div class="flex items-end justify-center">
+          <div class="text-white flex items-end justify-center">
             <animated-number
               class="text-[70px] min-w-[85px] font-600"
               :to="todaysCurrentProtein"

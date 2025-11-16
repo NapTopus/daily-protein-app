@@ -66,6 +66,9 @@ importers:
       '@unocss/eslint-plugin':
         specifier: ^66.5.3
         version: 66.5.3(eslint@9.37.0(jiti@2.6.1))(typescript@5.6.3)
+      '@vee-validate/zod':
+        specifier: ^4.15.1
+        version: 4.15.1(vue@3.5.14(typescript@5.6.3))(zod@3.25.76)
       '@vitejs/plugin-legacy':
         specifier: ^5.0.0
         version: 5.4.3(terser@5.39.2)(vite@5.2.14(@types/node@22.15.21)(sass@1.89.2)(terser@5.39.2))
@@ -1607,6 +1610,11 @@ packages:
     resolution: {integrity: sha512-nWEH0Ym/161nu66T1ANIjmsh5quGOINaunTqUnb41j1U5Y6StW35JmiH3d4Gpk5IsNJ8plBIEaUADxoBIPZZMw==}
     peerDependencies:
       vite: ^2.9.0 || ^3.0.0-0 || ^4.0.0 || ^5.0.0-0 || ^6.0.0-0
+
+  '@vee-validate/zod@4.15.1':
+    resolution: {integrity: sha512-329Z4TDBE5Vx0FdbA8S4eR9iGCFFUNGbxjpQ20ff5b5wGueScjocUIx9JHPa79LTG06RnlUR4XogQsjN4tecKA==}
+    peerDependencies:
+      zod: ^3.24.0
 
   '@vitejs/plugin-legacy@5.4.3':
     resolution: {integrity: sha512-wsyXK9mascyplcqvww1gA1xYiy29iRHfyciw+a0t7qRNdzX6PdfSWmOoCi74epr87DujM+5J+rnnSv+4PazqVg==}
@@ -6116,6 +6124,14 @@ snapshots:
       tinyglobby: 0.2.14
       unplugin-utils: 0.2.4
       vite: 5.2.14(@types/node@22.15.21)(sass@1.89.2)(terser@5.39.2)
+    transitivePeerDependencies:
+      - vue
+
+  '@vee-validate/zod@4.15.1(vue@3.5.14(typescript@5.6.3))(zod@3.25.76)':
+    dependencies:
+      type-fest: 4.41.0
+      vee-validate: 4.15.1(vue@3.5.14(typescript@5.6.3))
+      zod: 3.25.76
     transitivePeerDependencies:
       - vue
 
