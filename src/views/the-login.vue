@@ -27,6 +27,7 @@
                   type="email"
                   placeholder="Enter your email"
                   :disabled="isLoading"
+                  @ion-blur="() => { emailBlur(); validateEmail(); }"
                 />
               </ion-item>
               <p
@@ -46,7 +47,10 @@
                   type="password"
                   placeholder="Enter your password"
                   :disabled="isLoading"
-                />
+                  @ion-blur="() => { passwordBlur(); validatePassword(); }"
+                >
+                  <ion-input-password-toggle slot="end" />
+                </ion-input>
               </ion-item>
               <p
                 v-if="errors.password"
@@ -105,17 +109,19 @@ import type { LoginDto } from '@/schemas'
 import { toTypedSchema } from '@vee-validate/zod'
 import to from 'await-to-js'
 import { warningOutline } from 'ionicons/icons'
-import { useField, useForm, Field as VeeField, Form as VeeForm } from 'vee-validate'
-import { onMounted, ref } from 'vue'
+import { useField, useForm } from 'vee-validate'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { login } from '@/api/auth'
 import { RouteName } from '@/router'
 import { loginDtoSchema } from '@/schemas'
+import { useAuthStore } from '@/store/auth-store'
 
-// ✅ 將 Zod schema 轉為 VeeValidate 格式
+// 將 Zod schema 轉為 VeeValidate 格式
 const loginSchema = toTypedSchema(loginDtoSchema)
 
 const router = useRouter()
+const { setAccessToken } = useAuthStore()
 const loginErrorMessage = ref('')
 const isLoading = ref(false)
 
@@ -123,33 +129,33 @@ const { handleSubmit, errors } = useForm({
   validationSchema: loginSchema,
 })
 
-const { value: email } = useField('email')
-const { value: password } = useField('password')
+const { value: email, handleBlur: emailBlur, validate: validateEmail } = useField('email', undefined, {
+  validateOnValueUpdate: false,
+})
+
+const { value: password, handleBlur: passwordBlur, validate: validatePassword } = useField('password', undefined, {
+  validateOnValueUpdate: false,
+})
 
 const onSubmit = handleSubmit(async (values: LoginDto) => {
-  console.log('✅ values', values)
   loginErrorMessage.value = ''
-  // isLoading.value = true
+  isLoading.value = true
 
   const [err, res] = await to(login(values))
 
   if (err) {
-    console.log('❌ err', err)
     loginErrorMessage.value = (err as any)?.response?.data?.message || 'Login failed'
     isLoading.value = false
     return
   }
 
-  const token = res?.data?.token
+  const token = res?.data?.authToken
+
   if (token)
-    localStorage.setItem('token', token)
+    setAccessToken(token)
 
   router.replace({ name: RouteName.INDEX })
   isLoading.value = false
-})
-
-onMounted(() => {
-  console.log('⚡️ TheLogin mounted')
 })
 </script>
 

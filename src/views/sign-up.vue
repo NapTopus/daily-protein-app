@@ -28,6 +28,7 @@
                   type="text"
                   placeholder="Enter your name"
                   :disabled="isLoading"
+                  @ion-blur="() => { nameBlur(); validateName(); }"
                 />
               </ion-item>
               <p
@@ -46,10 +47,11 @@
                   type="email"
                   placeholder="Enter your email"
                   :disabled="isLoading"
+                  @ion-blur="() => { emailBlur(); validateEmail(); }"
                 />
               </ion-item>
               <p
-                v-if="errors.password"
+                v-if="errors.email"
                 class="text-red-500 text-sm mt-1"
               >
                 {{ errors.email }}
@@ -64,6 +66,7 @@
                   type="password"
                   placeholder="Enter your password"
                   :disabled="isLoading"
+                  @ion-blur="() => { passwordBlur(); validatePassword(); }"
                 >
                   <ion-input-password-toggle slot="end" />
                 </ion-input>
@@ -84,6 +87,7 @@
                   type="password"
                   placeholder="Confirm your password"
                   :disabled="isLoading"
+                  @ion-blur="() => { passwordConfirmationBlur(); validatePasswordConfirmation(); }"
                 >
                   <ion-input-password-toggle slot="end" />
                 </ion-input>
@@ -160,11 +164,21 @@ const { handleSubmit, errors } = useForm({
   validationSchema: signUpSchema,
 })
 
-const { value: name } = useField('name')
-const { value: email } = useField('email')
-const { value: password } = useField('password')
-// TODO: 換成小駝峯命名
-const { value: passwordConfirmation } = useField('passwordConfirmation')
+const { value: name, handleBlur: nameBlur, validate: validateName } = useField('name', undefined, {
+  validateOnValueUpdate: false,
+})
+
+const { value: email, handleBlur: emailBlur, validate: validateEmail } = useField('email', undefined, {
+  validateOnValueUpdate: false,
+})
+
+const { value: password, handleBlur: passwordBlur, validate: validatePassword } = useField('password', undefined, {
+  validateOnValueUpdate: false,
+})
+
+const { value: passwordConfirmation, handleBlur: passwordConfirmationBlur, validate: validatePasswordConfirmation } = useField('passwordConfirmation', undefined, {
+  validateOnValueUpdate: false,
+})
 
 const signUpErrorMessage = ref('')
 
