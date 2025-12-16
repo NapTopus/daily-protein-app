@@ -5,7 +5,7 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/store/auth-store'
 
 const api = axios.create({
-  baseURL: 'https://daily-protein.lynkishere.com/api',
+  baseURL: '/api',
   timeout: 10000,
   // withCredentials: true,
 })

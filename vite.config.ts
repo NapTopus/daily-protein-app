@@ -31,6 +31,16 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://daily-protein.lynkishere.com',
+        changeOrigin: true,
+        secure: true,
+        cookieDomainRewrite: 'localhost'
+      }
+    }
+  },
   test: {
     globals: true,
     environment: 'jsdom'
