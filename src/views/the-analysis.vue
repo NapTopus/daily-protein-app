@@ -2,13 +2,15 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>分析</ion-title>
+        <ion-title>Analysis</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
         <ion-toolbar>
-          <ion-title size="large">分析</ion-title>
+          <ion-title size="large">
+            Analysis
+          </ion-title>
         </ion-toolbar>
       </ion-header>
 
@@ -21,5 +23,5 @@
   setup
   lang="ts"
 >
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/vue';
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
 </script>

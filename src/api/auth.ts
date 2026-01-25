@@ -1,0 +1,18 @@
+import api from './client'
+
+/** 用戶註冊 */
+export function signUp(payload: { name: string; email: string; password: string; passwordConfirmation: string }) {
+  return api.post('auth/register', payload)
+}
+
+/** 用戶登入 */
+export function login(payload: { email: string; password: string }) {
+  return api.post('auth/login', payload)
+}
+
+/** 用戶刷新 token */
+export function refresh() {
+  return api.get('auth/refresh')
+}
+
+// refresh
