@@ -1,5 +1,4 @@
 import type { AxiosError, AxiosRequestConfig } from 'axios'
-import { until } from '@vueuse/core'
 import axios from 'axios'
 import { ref } from 'vue'
 import { useAuthStore } from '@/store/auth-store'
@@ -87,7 +86,6 @@ api.interceptors.response.use(
 
     try {
       await authStore.refreshToken()
-      await until(isRefreshing).toBe(false)
       flushQueue()
 
       originalConfig.headers = {
