@@ -17,11 +17,12 @@ export const useAuthStore = defineStore('auth', () => {
   async function refreshToken() {
     const [err, res] = await to(refresh())
     if (err) {
-      logout()
-      window.location.href = '/login'
-      return
+      return Promise.reject(err) // Allow caller to handle the error
     }
-    setAccessToken(res.data.accessToken)
+    if (!res.data || !res.data.authToken) {
+      return Promise.reject(new Error('Auth token is missing in the response'))
+    }
+    setAccessToken(res.data.authToken)
   }
 
   return {

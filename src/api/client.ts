@@ -1,4 +1,5 @@
 import type { AxiosError, AxiosRequestConfig } from 'axios'
+import { until } from '@vueuse/core'
 import axios from 'axios'
 import { ref } from 'vue'
 import { useAuthStore } from '@/store/auth-store'
@@ -76,6 +77,7 @@ api.interceptors.response.use(
 
     // refresh 進行中，加入佇列等待
     if (isRefreshing.value) {
+      await until(isRefreshing).toBe(false)
       return new Promise((resolve, reject) => {
         pendingQueue.push({ resolve, reject, config: originalConfig })
       })
