@@ -6,6 +6,10 @@ export default defineConfig({
     colors: {
       'primary': '#00CFFF',
       'secondary-grey': '#898989',
+      'ink': '#f5f1e8',
+      'teal': '#2bb5ce',
+      'teal-deep': '#1a7a8f',
+      'danger-soft': '#d68a8a',
     },
   },
   shortcuts: [
