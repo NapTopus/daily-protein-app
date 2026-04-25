@@ -4,8 +4,8 @@ import { ref } from 'vue'
 import { getUserInfo, updateUserInfo } from '@/api/user'
 
 export interface UserInfo {
-  defaultTarget?: number
-  [key: string]: unknown
+  defaultTarget?: number;
+  [key: string]: unknown;
 }
 
 export const useUserStore = defineStore('user', () => {
@@ -14,7 +14,9 @@ export const useUserStore = defineStore('user', () => {
 
   /** 取得用戶資訊（有快取則不重複 fetch） */
   async function fetchUserInfo() {
-    if (userInfo.value) return
+    if (userInfo.value)
+      return
+
     isLoading.value = true
     const [err, res] = await to(getUserInfo())
     isLoading.value = false
@@ -28,11 +30,17 @@ export const useUserStore = defineStore('user', () => {
   /** 更新目標蛋白質，成功後同步更新 store */
   async function updateTarget(target: number) {
     const [err] = await to(updateUserInfo({ target }))
-    if (err) throw err
+    if (err)
+      throw err
     if (userInfo.value) {
       userInfo.value.defaultTarget = target
     }
   }
 
-  return { userInfo, isLoading, fetchUserInfo, updateTarget }
+  function reset() {
+    userInfo.value = null
+    isLoading.value = false
+  }
+
+  return { userInfo, isLoading, fetchUserInfo, updateTarget, reset }
 })

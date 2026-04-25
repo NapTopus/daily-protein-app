@@ -29,11 +29,17 @@
 // import dayjs from 'dayjs'
 import gsap from 'gsap'
 
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useUserStore } from '@/store/user-store'
 import AnimatedNumber from './animated-number.vue'
 
-const targetProtein = ref(100)
-const todaysCurrentProtein = ref(10)
+const props = defineProps<{
+  currentProtein?: number;
+}>()
+
+const userStore = useUserStore()
+const targetProtein = computed(() => userStore.userInfo?.defaultTarget || 0)
+const todaysCurrentProtein = computed(() => props.currentProtein || 0)
 
 // const todaysDate = computed(() => {
 //   return dayjs().format('YYYY.MM.DD (dddd)')

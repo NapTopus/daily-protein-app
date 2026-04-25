@@ -8,7 +8,10 @@
           :count="metaBallCount"
           class="absolute inset-0"
         />
-        <display-card class="relative z-10" />
+        <display-card
+          :current-protein="todaysCurrentProtein"
+          class="relative z-10"
+        />
       </div>
 
       <!-- 右下角新增按鈕 -->
@@ -21,8 +24,8 @@
       >
         <div class="fab-wrapper">
           <ion-fab-button
-            @click="openModal"
             class="add-fab"
+            @click="openModal"
           >
             <ion-icon
               :icon="addOutline"
@@ -32,8 +35,6 @@
         </div>
       </ion-fab>
     </ion-content>
-
-
   </ion-page>
 </template>
 
@@ -51,21 +52,49 @@ import {
 } from '@ionic/vue'
 import { useAsyncState } from '@vueuse/core'
 import to from 'await-to-js'
+import dayjs from 'dayjs'
 import { addOutline } from 'ionicons/icons'
-import { computed, ref } from 'vue'
-import { getUserInfo } from '@/api/user'
+import { computed, onMounted, ref } from 'vue'
+import { getRecords } from '@/api/record'
 import AddRecordForm from '@/domains/index/components/add-record-form.vue'
 import DisplayCard from '@/domains/index/components/display-card.vue'
 import MetaballBackground from '@/domains/index/components/metaball-background.vue'
+import { useUserStore } from '@/store/user-store'
 import 'dayjs/locale/zh-tw'
-import { getRecords } from '@/api/record'
-import dayjs from 'dayjs'
+
+const userStore = useUserStore()
 
 const metaBallColor = ref('#249aae')
-const targetProtein = ref(100)
-const todaysCurrentProtein = ref(10)
+const targetProtein = computed(() => userStore.userInfo?.defaultTarget || 100)
+
+// 取得當天日期
+const today = dayjs().format('YYYY-MM-DD')
+
+const { state: items } = useAsyncState(
+  async () => {
+    const [err, res] = await to(getRecords({ from: today }))
+    if (err) {
+      console.error('Failed to fetch records:', err)
+      return
+    }
+    return res.data[0]?.items || []
+  },
+  [],
+)
+
+const todaysCurrentProtein = computed(() => {
+  if (!items.value)
+    return 0
+
+  const totalProtein = (items.value as any[]).reduce((acc: number, item: any) => {
+    return acc + (item.protein || 0)
+  }, 0)
+  return totalProtein
+})
+
 const metaBallCount = computed(() => {
-  return Math.floor(todaysCurrentProtein.value / targetProtein.value * 100)
+  const count = Math.max(Math.floor(todaysCurrentProtein.value / targetProtein.value * 100), 10) // Ensure a minimum count of 10
+  return count
 })
 
 async function openModal() {
@@ -80,33 +109,11 @@ async function openModal() {
   await modal.present()
 }
 
-const { state: userInfo } = useAsyncState(
-  async () => {
-    const [err, res] = await to(getUserInfo())
-    if (err) {
-      console.error('取得用戶資訊失敗：', err)
-      return
-    }
-    return res.data
-  },
-  { target: 0 },
-)
-
-// 取得當天日期
-const today = dayjs().format('YYYY-MM-DD')
-
-
-const { state: items } = useAsyncState(
-  async () => {
-    const [err, res] = await to(getRecords({ from: today }))
-    if (err) {
-      console.error('取得蛋白質紀錄失敗：', err)
-      return
-    }
-    return res.data
-  },
-  [],
-)
+onMounted(() => {
+  if (!userStore.userInfo) {
+    userStore.fetchUserInfo()
+  }
+})
 </script>
 
 <style

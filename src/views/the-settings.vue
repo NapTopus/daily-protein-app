@@ -81,39 +81,26 @@
   setup
   lang="ts"
 >
-import { IonCard, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonInput, IonItem, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
-import { syncRef, useAsyncState } from '@vueuse/core'
-import to from 'await-to-js'
-import { ref } from 'vue'
-import { getUserInfo, updateUserInfo } from '@/api/user'
+import { IonButton, IonCard, IonCardHeader, IonCardTitle, IonContent, IonHeader, IonInput, IonItem, IonPage, IonTitle, IonToolbar } from '@ionic/vue'
+import { onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '@/store/auth-store'
+import { useUserStore } from '@/store/user-store'
 
 const authStore = useAuthStore()
 
-const { state: userInfo } = useAsyncState(
-  async () => {
-    const [err, res] = await to(getUserInfo())
-
-    if (err) {
-      console.error('取得用戶資訊失敗：', err)
-      return
-    }
-
-    return res.data
-  },
-  { target: 0 },
-)
+const userStore = useUserStore()
+onMounted(() => userStore.fetchUserInfo())
 
 const proteinGoal = ref(0)
 
-syncRef(userInfo, proteinGoal, {
-  direction: 'ltr',
-  transform: {
-    ltr(left) {
-      return left?.defaultTarget || 0
-    },
+watch(
+  () => userStore.userInfo?.defaultTarget,
+  (val) => {
+    if (val !== undefined)
+      proteinGoal.value = val
   },
-})
+  { immediate: true },
+)
 
 // const weekStartDay = ref('monday')
 
@@ -130,11 +117,6 @@ function handleLogout() {
 
 /** 更新蛋白質目標 */
 async function handleUpdateTargetProtein() {
-  const [err, res] = await to(updateUserInfo({
-    target: proteinGoal.value,
-  }))
-  if (res) {
-    console.log('蛋白質目標更新成功', proteinGoal.value)
-  }
+  await userStore.updateTarget(proteinGoal.value)
 }
 </script>

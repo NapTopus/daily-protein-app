@@ -7,7 +7,7 @@
   lang="ts"
 >
 import gsap from 'gsap'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 interface Props {
   to: number;
@@ -19,14 +19,22 @@ const props = withDefaults(defineProps<Props>(), {
 
 const displayedNumber = ref(0)
 
-onMounted(() => {
+watch(
+  () => props.to,
+  (newVal) => {
+    animateTo(newVal)
+  },
+  { immediate: true },
+)
+
+function animateTo(value: number) {
   gsap.to(displayedNumber, {
-    value: props.to,
+    value,
     duration: props.duration,
     ease: 'power1.out',
     onUpdate: () => {
       displayedNumber.value = Math.round(displayedNumber.value)
     },
   })
-})
+}
 </script>
